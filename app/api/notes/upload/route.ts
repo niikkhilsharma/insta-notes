@@ -9,6 +9,6 @@ export async function POST(req: Request) {
 
 		return NextResponse.json({ newNote })
 	} catch (error) {
-		return NextResponse.json({ Message: 'Something went wrong.' }, { status: 500 })
+		return NextResponse.json({ Message: 'Something went wrong.', error: error }, { status: 500 })
 	}
 }

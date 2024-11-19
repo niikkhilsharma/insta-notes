@@ -5,14 +5,16 @@ export async function GET(req: NextRequest) {
 	try {
 		const { searchParams } = new URL(req.url)
 		const noteId = searchParams.get('noteId')
-
-		const note = await prisma.notes.findUnique({
-			where: { id: noteId },
-		})
+		let note
+		if (noteId) {
+			note = await prisma.notes.findUnique({
+				where: { id: noteId },
+			})
+		}
 
 		return NextResponse.json(note)
 	} catch (error) {
 		// Handle any potential errors
-		return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+		return NextResponse.json({ Message: 'Internal server error', error }, { status: 500 })
 	}
 }

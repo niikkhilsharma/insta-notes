@@ -1,17 +1,23 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import Quill from 'quill'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
-
 import hljs from 'highlight.js'
 import axios from 'axios'
 import { useSearchParams } from 'next/navigation'
+import type Quill from 'quill'
+import { useRouter } from 'next/navigation'
 
-export default function Home() {
+function Editor() {
 	const quillRef = useRef<Quill | null>(null)
 	const [loading, setLoading] = useState<boolean>(false)
+	const [isMounted, setIsMounted] = useState(false)
+	const router = useRouter()
+
+	useEffect(() => {
+		setIsMounted(true)
+	}, [])
 
 	const toolbarOptions = [
 		['bold', 'italic', 'underline', 'strike'], // toggled buttons
@@ -46,46 +52,52 @@ export default function Home() {
 	}
 
 	useEffect(() => {
-		if (noteId) getNoteContent()
-	}, [noteId])
+		if (noteId && isMounted) getNoteContent()
+	}, [noteId, isMounted])
 
 	useEffect(() => {
-		if (!quillRef.current) {
-			quillRef.current = new Quill('#editor', {
-				modules: {
-					syntax: {
-						hljs,
+		async function initQuill() {
+			if (!quillRef.current) {
+				const Quill = (await import('quill')).default
+
+				quillRef.current = new Quill('#editor', {
+					modules: {
+						syntax: {
+							hljs,
+						},
+						toolbar: toolbarOptions,
 					},
-					toolbar: toolbarOptions,
-				},
-				placeholder: 'Hello World',
-				theme: 'snow',
-			})
+					placeholder: 'Hello World',
+					theme: 'snow',
+				})
 
-			quillRef.current.root.innerHTML = ``
+				quillRef.current.root.innerHTML = ``
 
-			const toolbar = document.querySelector('.ql-toolbar.ql-snow')
-
-			if (toolbar) {
-				toolbar.setAttribute(
-					'style',
-					`position: sticky;
-					 top: 3.36rem;
+				const toolbar = document.querySelector('.ql-toolbar.ql-snow')
+				if (toolbar) {
+					toolbar.setAttribute(
+						'style',
+						`position: sticky;
+					 top: ${noteId ? '0' : '3.36rem'};
            background: white;
            z-index: 10;`
-				)
+					)
+				}
 			}
+		}
+		if (isMounted) {
+			initQuill()
 		}
 
 		return () => {
 			quillRef.current = null
-			const toolbar = document.querySelector('.ql-toolbar')
+			const toolbar = document.querySelector('.ql-toolbar.ql-snow')
 			toolbar?.remove()
 		}
-	}, [])
+	}, [isMounted])
 
 	const submitContent = async () => {
-		if (quillRef.current) {
+		if (typeof window !== 'undefined' && quillRef.current) {
 			const name = prompt('Kindly enter the note name')
 			const content = quillRef.current.root.innerHTML
 			console.log(content)
@@ -97,6 +109,7 @@ export default function Home() {
 					content,
 				})
 				alert('Success')
+				router.push('/all-notes')
 				console.log(res)
 			} catch (error) {
 				console.log(error)
@@ -110,32 +123,38 @@ export default function Home() {
 	return (
 		<div className="flex h-svh max-h-svh flex-col items-center justify-center gap-4 px-4">
 			<div className="mx-auto my-2 h-full w-full max-w-screen-xl overflow-hidden overflow-y-scroll rounded-xl border-4 border-black">
-				<div id="toolbar" className="flex justify-end items-center sticky top-0 bg-white z-10">
-					{!noteId && (
-						<>
-							<button
-								onClick={submitContent}
-								className="border border-black m-2 py-2 px-4 rounded-md bg-black text-white hover:bg-black/90 text-sm font-medium"
-								disabled={loading}
-							>
-								{loading ? 'Uploading...' : 'Save'}
-							</button>
-							<button
-								onClick={() => {
-									if (quillRef.current) {
-										quillRef.current.root.innerHTML = ''
-									}
-								}}
-								className="border border-red-500 m-2 py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-500/90 text-sm font-medium"
-								disabled={loading}
-							>
-								Clear
-							</button>
-						</>
-					)}
-				</div>
+				{!noteId && (
+					<div id="toolbar" className="flex justify-end items-center sticky top-0 bg-white z-10">
+						<button
+							onClick={submitContent}
+							className="border border-black m-2 py-2 px-4 rounded-md bg-black text-white hover:bg-black/90 text-sm font-medium"
+							disabled={loading}
+						>
+							{loading ? 'Uploading...' : 'Save'}
+						</button>
+						<button
+							onClick={() => {
+								if (quillRef.current) {
+									quillRef.current.root.innerHTML = ''
+								}
+							}}
+							className="border border-red-500 m-2 py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-500/90 text-sm font-medium"
+							disabled={loading}
+						>
+							Clear
+						</button>
+					</div>
+				)}
 				<div id="editor" />
 			</div>
 		</div>
+	)
+}
+
+export default function Home() {
+	return (
+		<Suspense>
+			<Editor />
+		</Suspense>
 	)
 }
