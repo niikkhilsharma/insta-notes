@@ -8,7 +8,9 @@ type AllNotes = {
 	content: string
 }
 
-const page = async () => {
+export const revalidate = 10
+
+export default async function Page() {
 	const allNotes: AllNotes[] = await prisma.notes.findMany()
 	console.log(allNotes)
 
@@ -23,5 +25,3 @@ const page = async () => {
 		</div>
 	)
 }
-
-export default page
