@@ -13,7 +13,7 @@ export default function QuillEditor({
 	noteId,
 	contentObj,
 }: {
-	noteId?: string
+	noteId?: string | string[]
 	contentObj?: null | { name: string; content: string; createdAt: Date }
 }) {
 	const router = useRouter()
