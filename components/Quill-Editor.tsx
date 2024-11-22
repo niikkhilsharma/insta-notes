@@ -9,7 +9,13 @@ import { useRouter } from 'next/navigation'
 import { toolbarOptions } from '@/utils/data'
 import axios from 'axios'
 
-export default function QuillEditor({ contentObj }: { contentObj?: null | { name: string; content: string; createdAt: Date } }) {
+export default function QuillEditor({
+	noteId,
+	contentObj,
+}: {
+	noteId?: string
+	contentObj?: null | { name: string; content: string; createdAt: Date }
+}) {
 	const router = useRouter()
 	const quillRef = useRef<Quill | null>(null)
 	const [loading, setLoading] = useState<boolean>(false)
@@ -66,7 +72,7 @@ export default function QuillEditor({ contentObj }: { contentObj?: null | { name
 			const toolbar = document.querySelector('.ql-toolbar.ql-snow')
 			toolbar?.remove()
 		}
-	}, [])
+	}, [noteId])
 
 	const submitContent = async () => {
 		if (typeof window !== 'undefined' && quillRef.current) {

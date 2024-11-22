@@ -19,5 +19,9 @@ export default async function Home({
 		}
 	}
 
-	return <Suspense fallback={<>Loading...</>}>{contentObj ? <QuillEditor contentObj={contentObj} /> : <QuillEditor />}</Suspense>
+	return (
+		<Suspense fallback={<>Loading...</>}>
+			{contentObj ? <QuillEditor noteId={noteId} contentObj={contentObj} /> : <QuillEditor />}
+		</Suspense>
+	)
 }
