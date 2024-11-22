@@ -54,11 +54,12 @@ export default function QuillEditor({ contentObj }: { contentObj?: null | { name
 					}
 				}
 				quillRef.current.root.innerHTML = contentObj?.content ? contentObj.content : ``
+			} else if (contentObj?.content) {
+				quillRef.current.root.innerHTML = contentObj?.content ? contentObj.content : ``
 			}
 		}
-		if (!quillRef.current) {
-			initQuill()
-		}
+
+		initQuill()
 
 		return () => {
 			quillRef.current = null
