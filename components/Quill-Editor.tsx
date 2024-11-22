@@ -24,6 +24,7 @@ export default function QuillEditor({
 		console.log('effect running')
 		async function initQuill() {
 			console.log('init running')
+			console.log(contentObj)
 			if (!quillRef.current) {
 				const Quill = (await import('quill')).default
 
