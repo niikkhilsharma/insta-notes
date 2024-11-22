@@ -8,7 +8,7 @@ type AllNotes = {
 	content: string
 }
 
-export const revalidate = 10
+export const revalidate = 1
 
 export default async function Page() {
 	const allNotes: AllNotes[] = await prisma.notes.findMany()
