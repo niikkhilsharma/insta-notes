@@ -3,11 +3,9 @@ import QuillEditor from '@/components/Quill-Editor'
 import prisma from '@/lib/prisma'
 
 export default async function Home({
-	params,
 	searchParams,
 }: {
-	params: { slug: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
 	const { noteId } = await searchParams
 	let contentObj = null

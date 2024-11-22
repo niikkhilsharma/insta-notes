@@ -7,6 +7,7 @@ import hljs from 'highlight.js'
 import type Quill from 'quill'
 import { useRouter } from 'next/navigation'
 import { toolbarOptions } from '@/utils/data'
+import axios from 'axios'
 
 export default function QuillEditor({ contentObj }: { contentObj?: null | { name: string; content: string; createdAt: Date } }) {
 	const router = useRouter()
