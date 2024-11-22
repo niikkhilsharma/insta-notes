@@ -21,7 +21,9 @@ export default function QuillEditor({
 	const [loading, setLoading] = useState<boolean>(false)
 
 	useEffect(() => {
+		console.log('effect running')
 		async function initQuill() {
+			console.log('init running')
 			if (!quillRef.current) {
 				const Quill = (await import('quill')).default
 
