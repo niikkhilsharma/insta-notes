@@ -39,6 +39,7 @@ function Editor() {
 
 		['clean'], // remove formatting button
 	]
+
 	const params = useSearchParams()
 	const noteId = params.get('noteId')
 
@@ -48,6 +49,7 @@ function Editor() {
 
 		if (quillRef.current) {
 			quillRef.current.root.innerHTML = response.content
+			setIsMounted(true)
 		}
 	}
 
@@ -153,7 +155,7 @@ function Editor() {
 
 export default function Home() {
 	return (
-		<Suspense>
+		<Suspense fallback={<>Loading...</>}>
 			<Editor />
 		</Suspense>
 	)
